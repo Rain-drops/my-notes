@@ -1,3 +1,33 @@
+
+
+## 多态
+
+没有继承就没有多态。
+
+Java 多态的表现形式有**方法重载**，**重写**，**多态变量**和**泛型**
+
+```java
+class Animal{
+    void m1(){
+        println("Animal");
+    }
+}
+class Chicken extends Animal{
+    void m1(){
+        println("Chicken");
+    }
+}
+class Dog extends Animal{
+    void m1(){
+        println("Dog");
+    }
+}
+
+
+```
+
+
+
 ## Lambda 
 
 ​	优点：代码简洁；非常容易进行并行计算，改善了集合操作（引入 Stream API）

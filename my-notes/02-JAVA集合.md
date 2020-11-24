@@ -305,7 +305,9 @@
 
 2. 底层是继承于 HashMap 实现，由一个双向链表构成
 
-3. 数据结构
+3. 
+
+4. 数据结构
 
    ```java
    public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V>{
@@ -324,7 +326,7 @@
    }
    ```
 
-4. 构造函数
+5. 构造函数
 
    ```java
    

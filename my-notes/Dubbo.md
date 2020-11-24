@@ -77,7 +77,7 @@
 
 然后将 export 得到的 exporter 存入一个 Map 中，供之后的远程调用查找，然后会向注册中心注册提供者的信息。
 
-![](D:\Book\MyNotes\img\dubbo-服务暴露-时序图.png)
+![](img\dubbo-服务暴露-时序图.png)
 
 
 
@@ -91,7 +91,7 @@
 
 得知提供者的信息之后会进入 dubbo 协议的引入，会创建 Invoker，期间会包含 NettyClient，来进行远程通信，最后会通过 Cluster 来包装 Invoker，默认是 FailoverCluster，最终返回代理类。 
 
-![](D:\Book\MyNotes\img\dubbo-服务引用-时序图.png)
+![](img\dubbo-服务引用-时序图.png)
 
 
 

@@ -37,7 +37,8 @@ Bean 的一次加工、属性设置、二次加工
 
 ##### 	区别：
 
-	1. JDK 动态代理只能对实现了接口的类生成代理，不能针对类。
+1. JDK 动态代理只能对实现了接口的类生成代理，不能针对类。
+
  	2. CGLIB 针对类实现代理，主要是对指定的类生成一个子类，覆盖其中的方法。不能对声明为 final 的方法进行代理。
 
 ### 3. 反射
@@ -52,9 +53,10 @@ InvocationHandler：
 
 #### 1. 实现方式
 
-	1. Class.forName("类的全路径")
+1. Class.forName("类的全路径")
+
  	2. 类名.class
- 	3. 对象名.class
+ 	3. 对象名.getClass()
 
 ### 4. 类加载机制
 
@@ -76,7 +78,7 @@ InvocationHandler：
 
 解析：虚拟机将常量池中的符合引用替换为直接引用的过程。
 
-初始化：执行类构造器 <client> 方法的过程。<client> 方法是油编译器自动收集类中的类变量的赋值操作和静态语句块中的语句合并而成的。
+初始化：执行类构造器 <client> 方法的过程。<client> 方法是由编译器自动收集类中的类变量的赋值操作和静态语句块中的语句合并而成的。
 
 使用：
 
@@ -84,11 +86,11 @@ InvocationHandler：
 
 ### 5. [ClassLoader](https://blog.csdn.net/jiangmaodong/article/details/105513954) 
 
-![class-loader](D:\Book\MyNotes\img\class-loader.png)
+![class-loader](img\class-loader.png)
 
 ### 6. BeanPostProcessor
 
-
+​	前置处理器，修改 bean 内容。
 
 ### 7. IOC
 
@@ -165,7 +167,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 ​	**Bean 装配顺序：**
 
-	1. 同是 @ComponentScan 扫描注册的 Bean，按 Class 文件名顺序，排在前面的先注册，所以先实例化，例如 ATest 类实例化先于 BTest 类。
+1. 同是 @ComponentScan 扫描注册的 Bean，按 Class 文件名顺序，排在前面的先注册，所以先实例化，例如 ATest 类实例化先于 BTest 类。
+
  	2. @Conguration 配置类实例化先于其内部类定义的 @Bean 方法执行实例化。
 
 **@Import 注解用来导入配置类或者一些需要前置加载的类。**

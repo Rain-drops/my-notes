@@ -21,16 +21,23 @@
 3. Callable
 
    ```java
-   public interface Callable<V> {
+   interface Callable<V> {
    　　V call() throws Exception;
    }
    ```
 
-   > 可以接受泛型，有返回值，可以抛出异常
+   > 可以接受泛型，有返回值，可以抛出异常。
    >
    > 获取返回值时，Future.get() 是阻塞的。
+   >
+   > 生产者与消费者模型，
+   
 
+**注：**
 
+Runnable 接口 和 Callable 接口的处理方式都是将其转化为 RunnableFuture
+
+![](img/thread-FutureTask.png)
 
 ## 多线程
 
@@ -149,7 +156,7 @@
       > |  volatile 读   |     NO     |     NO      |     NO      |
       > |  volatile 写   |            |     NO      |     NO      |
 
-#### 5. synchroized
+#### 5. Synchroized
 
 1. Java对象的构成
 
@@ -205,11 +212,11 @@
    
 8. 使用
 
-   同步代码块：monitorenter、monitorexit
+   同步代码块：monitorenter、monitorexit，锁是括号里面的对象
 
-   同步普通方法：ACC_SYNCHRONIZED 标识（flag，存放在运行时常量池中的 method_info 结构体中）
+   同步普通方法：ACC_SYNCHRONIZED 标识（flag，存放在运行时常量池中的 method_info 结构体中），锁是当前实例对象
 
-   同步静态方法：
+   同步静态方法：锁是当前类的 class 对象
 
 #### 6. ReentrantLock
 
@@ -217,7 +224,82 @@
 
 公平锁加锁过程：所有来的线程必须扔到队列尾部。acquire 方法会向非公平锁一下先调用 tryAcquire 获取锁，但是只有队列为空或者本身就是 head 时，才会成功，如果队列非空则被放到队列尾部
 
-#### 7. 信号量
+##### 1. [Condition](https://www.cnblogs.com/gemine/p/9039012.html)
+
+​	与 Lock 配合实现**等待/通知**模式。
+
+```java
+class DemoLock{
+    private Lock lock = new ReentrantLocK();
+    private Condition condition = lock.newCondition();
+    
+    private void conditionWait(){
+        lock.lock();
+        try{
+	        System.out.println("获取锁");
+            System.out.println("等待获取信号");
+            condition.await();
+            System.out.println("获取到信号");
+        }catch(Exection ex){
+        }finally{
+            lock.unlock();
+        }
+    }
+    private void conditionSignal(){
+        lock.lock();
+        try{
+	        System.out.println("获取锁");
+            condition.await();
+            System.out.println("发出信号");
+        }catch(Exection ex){
+        }finally{
+            lock.unlock();
+        }
+    }
+}
+
+```
+
+
+
+#### 7. 信号量（Semaphore）
+
+​		信号量是用来对某一共享资源所能**访问的最大个数**进行控制。	
+
+```java
+public class SemaphoreDemo {
+    public static void main(String[] args) {
+        method_2();
+    }
+    static void method_2(){
+         ExecutorService executorService = Executors.newCachedThreadPool();
+        // 信号量，只允许 3个线程同时访问
+        Semaphore semaphore = new Semaphore(3);
+        for (int i=0;i<10;i++){
+            final long num = i;
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // 获取许可
+                        semaphore.acquire();
+                        // 执行
+                        System.out.println("Accessing: " + num);
+                        // 模拟随机执行时长
+                        Thread.sleep(new Random().nextInt(5000)); 
+                        // 释放
+                        semaphore.release();
+                        System.out.println("Release..." + num);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        executorService.shutdown();
+    }
+}
+```
 
 
 
@@ -458,6 +540,8 @@ ReentrantLock 可以实现多路通知
 
 #### 12. ThreadPoolExector
 
+**先增加线程至核心线程数，之后放入队列，队列满则增加线程至最大线程数。**
+
 ```java
 /**
  * 核心线程数：线程池维护的核心线程数，即使它们处于空闲状态
@@ -472,27 +556,56 @@ new ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime
 	BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler)
 ```
 
-```
+> **丢弃策略：**
+>
+> ​	DiscardPolicy：丢弃请求
+>
+> ​	DiscardOldestPolicy：丢弃队列中最早加入的任务。
+>
+> ​	AbortPolicy：使用 Executor 抛出异常，通过异常处理。
+>
+> ​	CallerRunsPolicy：提交任务的线程自己负责执行这个任务。即不会创建新的线程，就在主线程中执行这个任务；
+>
+> **队列：**
+>
+> ​	SynchronousQueue：
+>
+> ​	LinkedBlockingQueue：无界队列
+>
+> ​	ArrayBlockingQueue：有界队列
+>
 
-丢弃策略：
+##### 1. 参数设置：
 
-​	DiscardPolicy：丢弃请求
+​	a. tasks，程序每秒需要处理的最大任务数量（假设 100~1000）
 
-​	DiscardOldestPolicy：丢弃队列中最早加入的任务。
+​	b. tasktime，单线程处理一个任务所需时间（假设 0.1 秒）
 
-​	AbortPolicy：使用 Executor 抛出异常，通过异常处理。
+​	c. responsetime，系统允许最大响应时间（假设 2 秒）
 
-​	CallerRunsPolicy：提交任务的线程自己负责执行这个任务。即不会创建新的线程，就在主线程中执行这个任务；
+**核心数设置：**
 
-队列：
+线程数 = tasks / (1 / tasktime) = tasks * tasktime
 
-​	SynchronousQueue：
+即需要 100 * 0.1 至 1000 * 0.1 ，即大于 10 个，再根据 二八 法则，即可设置为 20。
 
-​	LinkedBlockingQueue：无界队列
+> CPU 密集型：CPU 核心数 + 1
+>
+> IO 密集型：CPU 核心数 * 2
 
-​	ArrayBlockingQueue：有界队列
+**队列的长度：**
 
-```
+队列长度 = (核心线程数 / tasktime) * responsetime
+
+即可设置为 400
+
+ **最大线程数：**
+
+假设每秒 200 个任务，则需要 20 个线程，那么每秒达到 1000 个任务时，则需要 (1000 - 队列长度) * (20 / 200)
+
+即可设置为 60。 
+
+
 
 #### 13. 什么是不可变对象，它对写并发应用有什么帮助？
 
@@ -586,3 +699,31 @@ class T2_Sync{
 
 #### 17. Synchronized、volatile 的 CPU 原语句实现
 
+
+
+#### 18. 多线程间共享数据
+
+1. 全局变量
+
+2. 如果每个线程执行的代码相同，可以将共享变量封装在 Runnable 内部类中
+
+   ```java
+   public class DemoRunnable {
+       public static void main(String[] args) {
+           Ticket t = new Ticket();
+           new Thread(t).start();
+           new Thread(t).start();
+       }
+   }
+   class Ticket implements Runnable {
+       private int ticket = 10;
+       public void run() {
+           while (ticket > 0) {
+               ticket--;
+               System.out.println("当前票数为：" + ticket);
+           }
+       }
+   }
+   ```
+
+   

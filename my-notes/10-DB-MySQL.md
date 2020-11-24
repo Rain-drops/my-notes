@@ -493,7 +493,7 @@ Hash 索引：
 
 #### 5. 事务的基本特性和隔离级别
 
-事务：
+事务 ACID：
 
 ​		**原子性：**
 
@@ -505,13 +505,25 @@ Hash 索引：
 
 隔离级别：
 
-​		**读未提交：**
+​		**读未提交：**脏读、不可重复读、幻读
 
-​		**读已提交：**
+​		**读已提交：**不可重复读、幻读
 
-​		**可重复读：**
+​		**可重复读：**幻读
 
 ​		**串行化：**
+
+> **脏读：**
+>
+> ​	事务 A 读取到事务 B 还未提交的事务
+>
+> **不可重复读：**
+>
+> ​	在一个事务中读取了两次某数据，读取出的数据不一致，**针对数据更新操作**
+>
+> **幻读：**
+>
+> ​	在一个事务中发现了未被操作的事务，**针对数据插入操作**
 
 #### 6. ACID 靠什么保证
 
@@ -607,84 +619,144 @@ group by：先将 col 排序
 
 **并行复制：**解决主从同步延时问题。从库开启多个线程，并行读取 relay log 中不同库的日志，然后并行重放不同库的日志。这是**库级别**的并行。
 
-#### 17.慢 SQL 查询分析
+#### 17. 慢 SQL 查询分析
 
- 1. 会产生 慢 的情况：索引、数据量大
+会产生 慢 的情况：索引、数据量大
 
-    数据量大：使用 limit；通过 where 优化 limit；分库分表
+数据量大：使用 limit；通过 where 优化 limit；分库分表
 
-    索引：where 上是否使用函数；最左前缀匹配；索引长度；回表；
+索引：where 上是否使用函数；最左前缀匹配；索引长度；回表；
 
-    **排查：**
+**排查：**
 
-    ​	**explain：**
+​	**explain：**
 
-     1. 字段解释
+ 1. 字段解释
 
-        > **id：**选择标识符
-        > **select_type：**表示查询的类型
-        >
-        > ​	(1) SIMPLE(简单SELECT，不使用UNION或子查询等)
-        >
-        > ​	(2) PRIMARY(子查询中最外层查询，查询中若包含任何复杂的子部分，最外层的select被标记为PRIMARY)
-        >
-        > ​	(3) UNION(UNION中的第二个或后面的SELECT语句)
-        >
-        > ​	。。。。。。
-        >
-        > **table：**输出结果集的表
-        > **type：**表示表的连接类型
-        >
-        > ​	(1) ALL：Full Table Scan， MySQL将遍历全表以找到匹配的行
-        >
-        > ​	(2) index：Full Index Scan，index与ALL区别为index类型只遍历索引树
-        >
-        > ​	(3) range：只检索给定范围的行，使用一个索引来选择行
-        >
-        > ​	(4) ref：表示上述表的连接匹配条件，即哪些列或常量被用于查找索引列上的值
-        >
-        > ​	(5) eq_ref：类似 ref，区别就在使用的索引是唯一索引，对于每个索引键值，表中只有一条记录匹配，简单来说，就是多表连接中使用 primary key 或者 unique key 作为关联条件
-        >
-        > ​	(6) const、system：当 MySQL 对查询某部分进行优化，并转换为一个常量时，使用这些类型访问。如将主键置于 where 列表中，MySQL 就能将该查询转换为一个常量，system 是 const 类型的特例，当查询的表只有一行的情况下，使用 system
-        >
-        > ​	(7) NULL：MySQL 在优化过程中分解语句，执行时甚至不用访问表或索引，例如从一个索引列里选取最小值可以通过单独索引查找完成。
-        >
-        > **possible_keys：**表示查询时，可能使用的索引
-        > **key：**表示实际使用的索引
-        > **key_len：**索引字段的长度
-        > **ref：**列与索引的比较
-        > **rows：**扫描出的行数(估算的行数)
-        > **Extra：**执行情况的描述和说明
+    > **id：**选择标识符
+    > **select_type：**表示查询的类型
+    >
+    > ​	(1) SIMPLE(简单SELECT，不使用UNION或子查询等)
+    >
+    > ​	(2) PRIMARY(子查询中最外层查询，查询中若包含任何复杂的子部分，最外层的select被标记为PRIMARY)
+    >
+    > ​	(3) UNION(UNION中的第二个或后面的SELECT语句)
+    >
+    > ​	。。。。。。
+    >
+    > **table：**输出结果集的表
+    > **type：**表示表的连接类型
+    >
+    > ​	(1) ALL：Full Table Scan， MySQL将遍历全表以找到匹配的行
+    >
+    > ​	(2) index：Full Index Scan，index与ALL区别为index类型只遍历索引树
+    >
+    > ​	(3) range：只检索给定范围的行，使用一个索引来选择行
+    >
+    > ​	(4) ref：表示上述表的连接匹配条件，即哪些列或常量被用于查找索引列上的值
+    >
+    > ​	(5) eq_ref：类似 ref，区别就在使用的索引是唯一索引，对于每个索引键值，表中只有一条记录匹配，简单来说，就是多表连接中使用 primary key 或者 unique key 作为关联条件
+    >
+    > ​	(6) const、system：当 MySQL 对查询某部分进行优化，并转换为一个常量时，使用这些类型访问。如将主键置于 where 列表中，MySQL 就能将该查询转换为一个常量，system 是 const 类型的特例，当查询的表只有一行的情况下，使用 system
+    >
+    > ​	(7) NULL：MySQL 在优化过程中分解语句，执行时甚至不用访问表或索引，例如从一个索引列里选取最小值可以通过单独索引查找完成。
+    >
+    > **possible_keys：**表示查询时，可能使用的索引
+    > **key：**表示实际使用的索引
+    > **key_len：**索引字段的长度
+    > **ref：**列与索引的比较
+    > **rows：**扫描出的行数(估算的行数)
+    > **Extra：**执行情况的描述和说明
 
-    
+​	**show profile：**会在后台保存最近15次的运行结果。
 
-    ​	**show profile：**会在后台保存最近15次的运行结果。
+      			1. 通过 Show Profile 能查看 SQL 的耗时
 
-       			1. 通过 Show Profile 能查看 SQL 的耗时
+![](img/mysql_show_profiles.png)
 
-    ![](img/mysql_show_profiles.png)
+   2. 通过 Query_ID 可以得到具体 SQL 从连接 - 服务 - 引擎 - 存储四层结构完整生命周期的耗时
 
-       2. 通过 Query_ID 可以得到具体 SQL 从连接 - 服务 - 引擎 - 存储四层结构完整生命周期的耗时
+      ![](img/mysql_show_profiles_2.png)
 
-          ![](img/mysql_show_profiles_2.png)
+      > **# 可用参数 type：**
+      >
+      > ALL  　　          # 显示所有的开销信息
+      > BLOCK IO　　 # 显示块IO相关开销
+      > CONTEXT SWITCHES　　#上下文切换相关开销
+      > CPU                  # 显示CPU相关开销信息
+      > IPC                    # 显示发送和接收相关开销信息
+      > MEMORY　     # 显示内存相关开销信息
+      > PAGE FAULTS　　# 显示页面错误相关开销信息
+      > SOURCE　　   # 显示和Source_function，Source_file，Source_line相关的开销信息
+      > SWAPS　　     # 显示交换次数相关开销的信息
 
-          > **# 可用参数 type：**
-          >
-          > ALL  　　          # 显示所有的开销信息
-          > BLOCK IO　　 # 显示块IO相关开销
-          > CONTEXT SWITCHES　　#上下文切换相关开销
-          > CPU                  # 显示CPU相关开销信息
-          > IPC                    # 显示发送和接收相关开销信息
-          > MEMORY　     # 显示内存相关开销信息
-          > PAGE FAULTS　　# 显示页面错误相关开销信息
-          > SOURCE　　   # 显示和Source_function，Source_file，Source_line相关的开销信息
-          > SWAPS　　     # 显示交换次数相关开销的信息
+   3. 出现这四个 status 时说明有问题，group by 可能会创建临时表
 
-       3. 出现这四个 status 时说明有问题，group by 可能会创建临时表
+      > **# 危险状态：**
+      >
+      > converting HEAP to MyISAM  　　# 查询结果太大，内存不够用了，在往磁盘上搬
+      > Creating tmp table         　　          # 创建了临时表，回先把数据拷贝到临时表，用完后再删除临时表
+      > Copying to tmp table on disk 　    # 把内存中临时表复制到磁盘，危险！！！
+      > locked
 
-          > **# 危险状态：**
-          >
-          > converting HEAP to MyISAM  　　# 查询结果太大，内存不够用了，在往磁盘上搬
-          > Creating tmp table         　　          # 创建了临时表，回先把数据拷贝到临时表，用完后再删除临时表
-          > Copying to tmp table on disk 　    # 把内存中临时表复制到磁盘，危险！！！
-          > locked
+
+
+#### 18. Mysql 区间分组查询
+
+**使用 case when 或者 if 实现**
+
+> select 
+> 	count(if(id between 0 and 5, id , null ) ) as "0-5",
+> 	count(if(id between 6 and 10, id , null ) ) as "6-10",
+> 	count(if(id between 11 and 20, id , null ) ) as "11-20",
+> 	count(if(id between 21 and 50, id , null ) ) as "21-50"
+> from t_user ;
+
+**使用 mysql 提供的 interval 函数 及 elt 函数**
+
+interval(N,N1,N2,N3) ,比较列表中的 N 值，该函数如果 N<N1 返回 0，如果 N<N2 返回 1，如果 N<N3 返回 2 等等。
+
+elt(n,str1,str2,str3,…) 如果 n=1，则返回 str1,如果 n=2，则返回 str2，依次类推
+
+> select 
+> 	elt(interval(id,0,6,11,21),"0-5","6-10","11-20","21-50") as region ,count(*) 
+> from t_user group by region;
+
+新建一个 temp 中间表，存储区间的上下限临界值，然后通过 join 关联查询
+
+> select region,count(*)
+> from t_user 
+> left join tmp 
+> on t_user.id between tmp.lower and tmp.upper
+> group by region
+
+
+
+#### 19. Mysql 语句执行顺序
+
+| 关键字或 解释           | 执行顺序 |
+| ----------------------- | -------- |
+| select 查询列表（字段） | 第七步   |
+| from 表                 | 第一步   |
+| 连接类型 join 表2       | 第二步   |
+| on 连接条件             | 第三步   |
+| where 筛选条件          | 第四步   |
+| group by 分组列表       | 第五步   |
+| having 分组后的筛选条件 | 第六步   |
+| order by 排序列表       | 第八步   |
+| limit 偏移 ，条目数     | 第九步   |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
