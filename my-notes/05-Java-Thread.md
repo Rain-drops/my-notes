@@ -6,8 +6,6 @@
    extends Thread;
    ```
 
-   
-
 2. Runable
 
    ```java
@@ -15,8 +13,6 @@
    　　public abstract void run();
    }
    ```
-
-   
 
 3. Callable
 
@@ -45,7 +41,7 @@ Runnable 接口 和 Callable 接口的处理方式都是将其转化为 Runnable
 
 #### 2. 什么是多线程
 
-1. CPU调度算法
+1. CPU 调度算法
 
    1. 时间片轮转算法（RR）
 
@@ -61,7 +57,7 @@ Runnable 接口 和 Callable 接口的处理方式都是将其转化为 Runnable
 
    6. 多级反馈队列调度算法
 
-2. Java调度机制
+2. Java 调度机制
 
    1. 线程调度器
 
@@ -158,7 +154,7 @@ Runnable 接口 和 Callable 接口的处理方式都是将其转化为 Runnable
 
 #### 5. Synchroized
 
-1. Java对象的构成
+1. Java 对象的构成
 
    1. 对象头
 

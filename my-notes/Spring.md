@@ -86,6 +86,8 @@ InvocationHandler：
 
 ### 5. [ClassLoader](https://blog.csdn.net/jiangmaodong/article/details/105513954) 
 
+双亲委派机制：避免类的重复加载 、安全（防止核心库被篡改）
+
 ![class-loader](img\class-loader.png)
 
 ### 6. BeanPostProcessor
@@ -124,17 +126,16 @@ InvocationHandler：
 
 ### 10. 三级缓存
 
-​	**无法解决构造器注入的循环依赖**
+​	**无法解决构造器注入的循环依赖**：加入  singletonFactories 三级缓存的前提是执行了构造器。
 
 ```java
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
     /** 一级缓存 Cache of singleton objects: bean name to bean instance. */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+    /** 二级缓存 Cache of early singleton objects: bean name to bean instance. */
+	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 	/** 三级缓存 Cache of singleton factories: bean name to ObjectFactory. */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
-	/** 二级缓存 Cache of early singleton objects: bean name to bean instance. */
-	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
- 
     ......
 }
 ```
@@ -144,20 +145,22 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 1. 加载配置文件
 
  	2. 解析配置文件转化为 beanDefination，获取 Bean 的所有属性，依赖及初始化用到的各类处理器等
- 	3. 创建 BeanFactory 并初始化所有单例 Bean
+ 	3. 创建 BeanFactory 并初始化所有**单例** Bean
  	4. 注册所有的单例 Bean 并返回可用的容器，一般为扩展的 ApplicationContext
 
 #### 一级缓存：
 
-​	在步骤 3 中，所有单例的 Bean 初始化完成后会存放在 Map(singletonObjects) 中，beanName 为 key，单例 Bean 为 value。
+​	在步骤 3 中，所有**单例**的 Bean **初始化完成后**会存放在 Map(singletonObjects) 中，beanName 为 key，单例 Bean 为 value。
+
+​	**从该缓存中去除的 Bean 可以直接使用**。
 
 #### 二级缓存：
 
-​	提前暴露的对象缓存
+​	提前暴露的对象缓存，存放原始的 Bean 对象（尚未填充属性）
 
 #### 三级缓存：
 
-​	单例对象工厂缓存
+​	单例对象工厂缓存，存放 Bean 工厂对象。**代理**
 
 ### 11. session 共享
 

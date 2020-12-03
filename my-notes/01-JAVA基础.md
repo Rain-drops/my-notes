@@ -1,5 +1,3 @@
-
-
 ## 多态
 
 没有继承就没有多态。
@@ -22,9 +20,60 @@ class Dog extends Animal{
         println("Dog");
     }
 }
-
-
 ```
+
+
+
+## 接口和抽象类
+
+#### 抽象类：
+
+> 1. abstract 关键字修饰
+>
+> 2. 不能被实例化只能被继承
+>
+> 3. 抽象类中的方法的修饰符只能是 public 和 protected
+>
+> 4. 一个子类继承抽象类，必须实现父类抽象方法
+> 5. 方法可以被实现
+> 6. 不带花括号
+
+#### 接口：
+
+> 1. 接口中的变量被隐士的定义为 public static final，必须被赋值，方法被隐士定义为 public abstract（jdk 1.8 之前）
+> 2. 不能被实例化
+> 3. 多继承
+>
+> **jdk 1.8 之后：**
+>
+> 1. 支持默认方法（default method）：允许给接口添加非抽象方法实现，必须使用 default 关键字修饰；定义了default的方法可以不被实现子类所实现，但只能被实现子类的对象调用；如果子类实现了多个接口，并且这些接口包含一样的默认方法，则子类必须重写默认方法
+> 2. 静态方法（static method）：允许使用 static 关键字修饰一个方法，并提供实现。 
+
+## 对象
+
+![](img/Java-ObjectHead.jpg)
+
+### 1. 对象头
+
+#### 		1. Mark Word
+
+​			
+
+#### 		2. 指向类的指针
+
+
+
+#### 		3. 数组长度
+
+
+
+### 2. 实例数据
+
+
+
+### 3. 对齐填充字节
+
+
 
 
 
@@ -92,7 +141,7 @@ Stream<Integer> intParaStream = list.parallelStream();
 
 **JDK 1.7 循环链表**
 
-> 并发情况下，rehash
+> 采用头插法，并发情况下，扩容时会导致死循环，get 时异常。
 
 
 
@@ -190,4 +239,4 @@ int count;
 >
 > System.out.println(hello == hel + lo) ;   //flase
 >
->  
+

@@ -47,7 +47,7 @@
 
    **源码分析：**
 
-   注册的信息会存放在 map 中，而且还是个两层的 `ConcurrentHashMap<String, Map<String, Lease<InstanceInfo>>>`，外层 map 的 key 是 appName，也就是服务名，内层 map 的 key 是 instanceId，也就是实例名
+   注册的信息会存放在 map 中，而且还是个两层的 `ConcurrentHashMap<String, Map<String, Lease<InstanceInfo>>>`，外层 map 的 key 是 appName，也就是**服务名**，内层 map 的 key 是 instanceId，也就是**实例名**。InstanceInfo ：实例
 
    
 
