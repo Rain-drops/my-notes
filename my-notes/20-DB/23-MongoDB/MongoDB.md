@@ -1,0 +1,11 @@
+- MongoDB 是一个面向文档存储的数据库，操作起来比较简单和容易。
+- 你可以在MongoDB记录中设置任何属性的索引 (如：FirstName="Sameer",Address="8 Gandhi Road")来实现更快的排序。
+- 你可以通过本地或者网络创建数据镜像，这使得MongoDB有更强的扩展性。
+- 如果负载的增加（需要更多的存储空间和更强的处理能力） ，它可以分布在计算机网络中的其他节点上这就是所谓的分片。
+- Mongo支持丰富的查询表达式。查询指令使用JSON形式的标记，可轻易查询文档中内嵌的对象及数组。
+- MongoDb 使用update()命令可以实现替换完成的文档（数据）或者一些指定的数据字段 。
+- Mongodb中的Map/reduce主要是用来对数据进行批量处理和聚合操作。
+- Map和Reduce。Map函数调用emit(key,value)遍历集合中所有的记录，将key与value传给Reduce函数进行处理。
+- Map函数和Reduce函数是使用Javascript编写的，并可以通过db.runCommand或mapreduce命令来执行MapReduce操作。
+- GridFS是MongoDB中的一个内置功能，可以用于存放大量小文件。
+

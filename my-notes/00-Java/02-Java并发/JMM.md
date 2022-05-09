@@ -10,7 +10,7 @@
 
 #### 物理 PC 内存模型
 
-![](img/JMM-CPU.jpg)
+![](../img/JMM-CPU.jpg)
 
 **多 CPU：**
 
@@ -38,7 +38,7 @@
 
 ### 3. Java 内存模型
 
-![](img/JMM-Java.png)
+![](../img/JMM-Java.png)
 
 
 
@@ -49,7 +49,7 @@ JMM 抽象了主内存和本地内存的概念。
 
 #### Java 内存模型所带来的问题
 
-**可见性问题：**volatile/synchronized
+**可见性问题：**volatile / synchronized
 
 **竞争现象：**synchronized
 

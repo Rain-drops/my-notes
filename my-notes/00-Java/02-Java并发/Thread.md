@@ -373,6 +373,14 @@ public class SemaphoreDemo {
 
 #### 11. 线程之间的协作
 
+​		线程之间的通信机制有两种，**共享内存**和**消息传递**。
+
+​		在共享内存的并发模型里，线程之间共享程序的公共状态，线程之间通过写-读内存中的公共状态来隐式进行通信，典型的共享内存通信方式就是通过共享对象进行通信。
+
+​		在消息传递的并发模型里，线程之间没有公共状态，线程之间必须通过明确的发送消息来显式进行通信，在 java 中典型的消息传递方式就是 wait() 和 notify()。
+
+​		Java 的并发采用的是共享内存模型
+
 #### 12. 被弃用的 suspend 和 resume
 
 #### 13. wait 和 notify / notifyAll
@@ -417,10 +425,41 @@ public class SemaphoreDemo {
 
 #### 18. 线程池
 
-1. 创建方式
-2. 四种线程池
-3. 队列
-4. 丢弃策略
+newFixedThreadPool：建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。
+
+newSingleThreadExecutor：一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。
+
+newScheduledThreadPool：创建一个可定期或者延时执行任务的定长线程池，支持定时及周期性任务执行。 
+
+newCachedThreadPool：创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。
+
+```java
+/**
+ * corePoolSize 线程池基本大小
+ * maximumPoolSize 线程池最大大小
+ * keepAliveTime 线程存活保持时间
+ * workQueue 任务队列
+ * 		ArrayBlockingQueue：规定大小的 BlockingQueue，其构造必须指定大小。其所含的对象是FIFO顺序排序的。
+ * 		LinkedBlockingQueue：大小不固定的 BlockingQueue，
+ *			若其构造时指定大小，生成的BlockingQueue有大小限制，
+ *			不指定大小，其大小有Integer.MAX_VALUE来决定。其所含的对象是FIFO顺序排序的。
+ *      PriorityBlockingQueue：类似于 LinkedBlockingQueue，但是其所含对象的排序不是FIFO，而是依据对象的自然顺序或者构造函数的Comparator决定。
+ * 		SynchronizedQueue：特殊的 BlockingQueue，对其的操作必须是放和取交替完成。
+ * threadFactory 线程工厂
+ * handler 线程饱和策略
+ * 		丢弃任务并抛出异常
+ * 		丢弃任务但不抛出异常
+ * 		丢弃队列最前面的任务，然后重新提交被拒绝的任务
+ * 		由调用线程处理(执行)该任务
+ */
+public ThreadPoolExecutor
+    (int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) 
+{
+    this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, Executors.defaultThreadFactory(), defaultHandler);
+}
+```
+
+
 
 #### 19. JUC-Atomic
 
