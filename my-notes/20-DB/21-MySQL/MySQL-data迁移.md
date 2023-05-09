@@ -40,3 +40,72 @@ INSERT INTO `goods_info` VALUES (6, '000006', '000006', 'abcdef', '123456');
 ## 将ibd文件重新加载进来
 [root@node2] mysql> alter table goods_info import tablespace;
 ```
+
+
+
+## 主-从
+
+## Master
+[root@node2] vim /etc/my.cnf
+```
+server-id=130
+log-bin=mysql-bin
+### 忽略表
+replicate-wild-ignore-table=mysql.*
+replicate-wild-ignore-table=sys.*
+```
+
+### 创建用户、授权
+[root@node1] mysql> CREATE USER 'rep'@'node2' IDENTIFIED BY '!qA@wS3Ed$rF';
+[root@node1] mysql> grant replication slave on *.* to 'rep'@'node2' identified by '!qA@wS3Ed$rF';
+[root@node1] mysql> FLUSH PRIVILEGES;
+
+### 刷新表、并加锁，阻止写操作
+[root@node1] mysql> flush tables with read lock;
+
+### 获取二进制日志信息
+[root@node1] mysql> show master status;
+```
++-------------------+----------+--------------+------------------+
+| File              | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++-------------------+----------+--------------+------------------+
+| mysql-bin.000006 |      245 |              |                  |
++-------------------+----------+--------------+------------------+
+```
+
+### 数据库解锁
+[root@node1] mysql> unlock tables;
+
+
+## Selve
+
+[root@node2] vim /etc/my.cnf
+```
+server-id=131
+log-bin=mysql-bin
+### 忽略表
+replicate-wild-ignore-table=mysql.*
+replicate-wild-ignore-table=sys.*
+```
+
+### 配置同步参数
+[root@node2] mysql> CHANGE MASTER TO 
+				-> MASTER_HOST='<master_host>', 
+				-> MASTER_PORT='<master_port>', 
+				-> MASTER_USER='<replication_user_name>', 
+				-> MASTER_PASSWORD='<replication_password>', 
+				-> MASTER_LOG_FILE='<recorded_log_file_name>',
+				-> MASTER_LOG_POS='<recorded_log_position>';
+
+### 启动主从同步进程
+[root@node2] mysql> start slave;
+
+### 检查状态
+[root@node2] mysql> show slave status \G;
+```
+*************************** 1. row ***************************
+   ......
+slave_io_running: yes
+slave_sql_running: yes
+   ......
+```
