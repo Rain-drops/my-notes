@@ -50,7 +50,9 @@ INSERT INTO `goods_info` VALUES (6, '000006', '000006', 'abcdef', '123456');
 ```
 server-id=130
 log-bin=mysql-bin
-### 忽略表
+### 同步指定数据库
+replicate-wild-do-table=test.*
+### 忽略指定数据库
 replicate-wild-ignore-table=mysql.*
 replicate-wild-ignore-table=sys.*
 ```
@@ -83,7 +85,9 @@ replicate-wild-ignore-table=sys.*
 ```
 server-id=131
 log-bin=mysql-bin
-### 忽略表
+### 同步指定数据库
+replicate-wild-do-table=test.*
+### 忽略指定数据库
 replicate-wild-ignore-table=mysql.*
 replicate-wild-ignore-table=sys.*
 ```
