@@ -90,12 +90,12 @@ replicate-wild-ignore-table=sys.*
 
 ### 配置同步参数
 [root@node2] mysql> CHANGE MASTER TO 
-				-> MASTER_HOST='<master_host>', 
-				-> MASTER_PORT='<master_port>', 
-				-> MASTER_USER='<replication_user_name>', 
-				-> MASTER_PASSWORD='<replication_password>', 
-				-> MASTER_LOG_FILE='<recorded_log_file_name>',
-				-> MASTER_LOG_POS='<recorded_log_position>';
+				-> MASTER_HOST='<master_host>',  
+				-> MASTER_PORT='<master_port>',  
+				-> MASTER_USER='<replication_user_name>',  
+				-> MASTER_PASSWORD='<replication_password>',  
+				-> MASTER_LOG_FILE='<recorded_log_file_name>',  
+				-> MASTER_LOG_POS='<recorded_log_position>';  
 
 ### 启动主从同步进程
 [root@node2] mysql> start slave;
