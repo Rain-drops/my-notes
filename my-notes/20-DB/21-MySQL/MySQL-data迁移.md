@@ -56,15 +56,15 @@ replicate-wild-ignore-table=sys.*
 ```
 
 ### 创建用户、授权
-[root@node1] mysql> CREATE USER 'rep'@'node2' IDENTIFIED BY '!qA@wS3Ed$rF';
-[root@node1] mysql> grant replication slave on *.* to 'rep'@'node2' identified by '!qA@wS3Ed$rF';
-[root@node1] mysql> FLUSH PRIVILEGES;
+[root@node1] mysql> CREATE USER 'rep'@'node2' IDENTIFIED BY '!qA@wS3Ed$rF';  
+[root@node1] mysql> grant replication slave on *.* to 'rep'@'node2' identified by '!qA@wS3Ed$rF';  
+[root@node1] mysql> FLUSH PRIVILEGES;  
 
 ### 刷新表、并加锁，阻止写操作
-[root@node1] mysql> flush tables with read lock;
+[root@node1] mysql> flush tables with read lock;  
 
 ### 获取二进制日志信息
-[root@node1] mysql> show master status;
+[root@node1] mysql> show master status;  
 ```
 +-------------------+----------+--------------+------------------+
 | File              | Position | Binlog_Do_DB | Binlog_Ignore_DB |
@@ -74,12 +74,12 @@ replicate-wild-ignore-table=sys.*
 ```
 
 ### 数据库解锁
-[root@node1] mysql> unlock tables;
+[root@node1] mysql> unlock tables;  
 
 
 ## Selve
 
-[root@node2] vim /etc/my.cnf
+[root@node2] vim /etc/my.cnf  
 ```
 server-id=131
 log-bin=mysql-bin
@@ -89,7 +89,7 @@ replicate-wild-ignore-table=sys.*
 ```
 
 ### 配置同步参数
-[root@node2] mysql> CHANGE MASTER TO 
+[root@node2] mysql> CHANGE MASTER TO  
 				-> MASTER_HOST='<master_host>',  
 				-> MASTER_PORT='<master_port>',  
 				-> MASTER_USER='<replication_user_name>',  
