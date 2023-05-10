@@ -46,12 +46,12 @@ INSERT INTO `goods_info` VALUES (6, '000006', '000006', 'abcdef', '123456');
 ## 主-从
 
 ## Master
-[root@node2] vim /etc/my.cnf
+[root@node1] vim /etc/my.cnf
 ```
 server-id=130
 log-bin=mysql-bin
 ### 同步指定数据库
-replicate-wild-do-table=test.*
+binlog-do-db=test
 ### 忽略指定数据库
 replicate-wild-ignore-table=mysql.*
 replicate-wild-ignore-table=sys.*
@@ -86,7 +86,7 @@ replicate-wild-ignore-table=sys.*
 server-id=131
 log-bin=mysql-bin
 ### 同步指定数据库
-replicate-wild-do-table=test.*
+replicate-do-db=test
 ### 忽略指定数据库
 replicate-wild-ignore-table=mysql.*
 replicate-wild-ignore-table=sys.*
